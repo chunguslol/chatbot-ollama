@@ -1,7 +1,7 @@
 async function generateText(prompt) {
     const fetch = (await import('node-fetch')).default;
     
-    const url = "https://64be-189-28-64-131.ngrok-free.app";
+    const url = "https://1843-189-28-64-131.ngrok-free.app";
     const data = {
         model: "phi4:14b",
         prompt: prompt,
