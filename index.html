@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot con Ollama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .chat-container {
+            width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .input-container {
+            display: flex;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            background: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Escribe un mensaje...">
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+    
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById("userInput").value;
+            if (!userInput.trim()) return;
+            
+            const messagesDiv = document.getElementById("messages");
+            messagesDiv.innerHTML += `<p><strong>Tú:</strong> ${userInput}</p>`;
+            document.getElementById("userInput").value = "";
+            
+            const url = "http://127.0.0.1:11434/api/generate";
+            const data = {
+                model: "phi4:14b",
+                prompt: userInput,
+                stream: false
+            };
+            
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                messagesDiv.innerHTML += `<p><strong>Bot:</strong> ${result.response}</p>`;
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            } catch (error) {
+                console.error("Error:", error);
+                messagesDiv.innerHTML += `<p><strong>Bot:</strong> Error al obtener respuesta</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
